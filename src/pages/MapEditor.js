@@ -214,7 +214,7 @@ const MapEditor = () => {
           {activeStep === steps.length && (
             <Box sx={{ mt: 2, mb: 1 }}>
               <Typography style={{ color: 'white' }}>모든 단계를 완료했습니다.</Typography>
-              <Button
+              <Button ß
                 onClick={handleReset}
                 sx={{
                   mt: 1,
