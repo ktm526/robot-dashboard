@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import Sidebar from './components/Sidebar';
@@ -13,6 +13,11 @@ import { authAtom } from './atoms/authAtom';
 
 const App = () => {
   const [isAuthenticated] = useAtom(authAtom);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <Router>
@@ -27,8 +32,17 @@ const App = () => {
           element={
             isAuthenticated ? (
               <div style={{ display: 'flex' }}>
-                <Sidebar />
-                <main style={{ flexGrow: 1, backgroundColor: '#2B2633', color: 'white', padding: '16px', marginLeft: '320px' }}>
+                <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                <main
+                  style={{
+                    flexGrow: 1,
+                    backgroundColor: '#2B2633',
+                    color: 'white',
+                    padding: '16px',
+                    marginLeft: isSidebarOpen ? '320px' : '60px',  // 사이드바가 접힐 때 margin-left를 조절
+                    transition: 'margin-left 0.3s ease',  // 부드러운 전환을 위한 애니메이션
+                  }}
+                >
                   <Routes>
                     <Route path="/" element={<Main />} />
                     <Route path="/map-editor" element={<MapEditor />} />

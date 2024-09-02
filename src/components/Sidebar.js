@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import { ReactComponent as HomeIcon } from '../assets/home.svg';
@@ -9,8 +9,17 @@ import { ReactComponent as DataAnalysisIcon } from '../assets/dataanalysis.svg';
 import { ReactComponent as SettingsIcon } from '../assets/settings.svg';
 import { ReactComponent as LogoutIcon } from '../assets/logout.svg';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
+  const [textVisible, setTextVisible] = useState(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => setTextVisible(true), 200);
+    } else {
+      setTextVisible(false);
+    }
+  }, [isOpen]);
 
   const menuItems = [
     { text: '메인 모니터링', icon: <HomeIcon />, path: '/' },
@@ -30,63 +39,121 @@ const Sidebar = () => {
   };
 
   return (
-    <div style={{
-      width: '320px',
-      height: '100vh',
-      backgroundColor: '#4D4B50',
-      color: 'white',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      padding: '20px',
-      boxSizing: 'border-box',
-      position: 'fixed',
-      top: 0,
-      left: 0
-    }}>
-      <div>
-        <h1 style={{ marginBottom: '40px', fontSize: '26px', textAlign: 'center', fontWeight: 600, letterSpacing: '-0.25px' }}>로봇 관제 시스템</h1>
-        <List>
-          {menuItems.map((item) => (
-            <ListItem
-              button
-              key={item.text}
-              component={Link}
-              to={item.path}
+    <div
+      style={{
+        width: isOpen ? '320px' : '60px',
+        height: '100vh',
+        backgroundColor: '#4D4B50',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '10px',
+        boxSizing: 'border-box',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        boxShadow: '2px 0 5px rgba(0, 0, 0, 0.5)',
+        transition: 'width 0.2s ease',
+        overflow: 'hidden',
+        cursor: 'pointer',
+      }}
+      onClick={toggleSidebar}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '60px', // 제목의 고정된 높이를 유지
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '26px',
+            fontWeight: 600,
+            letterSpacing: '-0.25px',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+            flexGrow: 1,
+            marginLeft: '0px',
+            transition: 'opacity 0.2s ease',
+            opacity: isOpen ? 1 : 0, // 사이드바가 접히면 투명화
+          }}
+        >
+          로봇 관제 시스템
+        </h1>
+      </div>
+      <List>
+        {menuItems.map((item) => (
+          <ListItem
+            button
+            key={item.text}
+            component={Link}
+            to={item.path}
+            style={{
+              backgroundColor: location.pathname === item.path ? '#2B2633' : 'transparent',
+              color: location.pathname === item.path ? 'white' : 'white',
+              marginBottom: '10px',
+              borderRadius: '10px',
+              padding: '10px 5px', // 일관된 패딩 적용
+              fontWeight: 400,
+              letterSpacing: '-0.25px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <ListItemIcon
               style={{
-                backgroundColor: location.pathname === item.path ? '#2B2633' : 'transparent',
-                color: location.pathname === item.path ? 'white' : 'white',
-                marginBottom: '10px',
-                borderRadius: '10px',
-                padding: '10px 20px',
-                fontWeight: 400,
-                letterSpacing: '-0.25px'
+                color: 'inherit',
+                minWidth: '40px',
+                //paddingLeft: '0px', // 패딩을 고정
               }}
             >
-              <ListItemIcon style={{ color: 'inherit', minWidth: '40px' }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} style={{ fontSize: '18px' }} />
-            </ListItem>
-          ))}
-        </List>
-      </div>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText
+              primary={item.text}
+              style={{
+                fontSize: '18px',
+                marginLeft: '10px',
+                opacity: textVisible ? 1 : 0,
+                transition: 'opacity 0.2s ease',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+            />
+          </ListItem>
+        ))}
+      </List>
       <div>
-        <button onClick={handleLogout} style={{
-          padding: '10px',
-          width: '100%',
-          cursor: 'click',
-          backgroundColor: '#2B2633',
-          color: 'white',
-          border: 'none',
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 600,
-          letterSpacing: '-0.25px',
-          fontFamily: 'Pretendard, sans-serif',
-          fontSize: '21px' // 로그아웃 버튼 폰트 사이즈 설정
-        }}>
-          Logout
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLogout();
+          }}
+          style={{
+            marginTop: '10px',
+            padding: '10px',
+            width: '100%',
+            cursor: 'pointer',
+            backgroundColor: '#2B2633',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: isOpen ? '16px' : '24px',
+            fontWeight: '600',
+            transition: 'font-size 0.2s ease',
+          }}
+        >
+          {isOpen ? 'Logout' : <LogoutIcon />}
         </button>
       </div>
     </div>
